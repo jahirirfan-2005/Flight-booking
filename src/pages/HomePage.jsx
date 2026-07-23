@@ -13,7 +13,28 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState("Home");
   const [activeBooking, setActiveBooking] = useState(null);
   const [preselectedFlight, setPreselectedFlight] = useState(null);
-  const [supportSubmitted, setSupportSubmitted] = useState(false);
+  const [settings, setSettings] = useState(() => {
+    const saved = localStorage.getItem('aeroswift_settings');
+    return saved ? JSON.parse(saved) : {
+      glassmorphism: true,
+      animations: true,
+      autoCacheEmail: true
+    };
+  });
+
+  const [supportSubmitted, setSupportSubmitted] = useState(null); // ticket ID or null
+  const [supportInquiries, setSupportInquiries] = useState(() => {
+    const saved = localStorage.getItem('aeroswift_support_tickets');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const toggleSetting = (key) => {
+    setSettings(prev => {
+      const updated = { ...prev, [key]: !prev[key] };
+      localStorage.setItem('aeroswift_settings', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   const handleBookingSuccess = (bookingDetails) => {
     setActiveBooking(bookingDetails);
@@ -56,6 +77,21 @@ const Home = () => {
     }
   };
 
+  const handleSupportSubmit = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.supportName.value;
+    const email = form.supportEmail.value;
+    const msg = form.supportMsg.value;
+    const ticketId = 'TK-' + Math.floor(100000 + Math.random() * 900000);
+    const newInquiry = { id: ticketId, name, email, msg, date: new Date().toLocaleDateString() };
+    const updated = [newInquiry, ...supportInquiries];
+    setSupportInquiries(updated);
+    localStorage.setItem('aeroswift_support_tickets', JSON.stringify(updated));
+    setSupportSubmitted(ticketId);
+    form.reset();
+  };
+
   const renderSupportView = () => (
     <div className="support-view my-4">
       <Card className="card-design border-0 shadow-sm p-4 rounded-4 bg-white">
@@ -69,27 +105,27 @@ const Home = () => {
           </div>
           <hr />
           {supportSubmitted ? (
-            <Alert variant="success" onClose={() => setSupportSubmitted(false)} dismissible className="py-3 px-4 rounded-4 shadow-sm text-center my-4">
+            <Alert variant="success" onClose={() => setSupportSubmitted(null)} dismissible className="py-3 px-4 rounded-4 shadow-sm text-center my-4">
               <span className="material-icons text-success font-size-36 mb-2">check_circle</span>
-              <h5 className="fw-bold mb-1">Support Inquiry Submitted Successfully!</h5>
+              <h5 className="fw-bold mb-1">Support Ticket {supportSubmitted} Created!</h5>
               <p className="text-secondary-emphasis fs-7 mb-0">Our support staff will review your inquiry and contact you via email within 2 hours.</p>
             </Alert>
           ) : (
             <div className="row g-4 mt-2">
               <div className="col-md-6">
                 <h5 className="fw-bold mb-3 text-dark">Submit Support Ticket</h5>
-                <Form onSubmit={(e) => { e.preventDefault(); setSupportSubmitted(true); }}>
+                <Form onSubmit={handleSupportSubmit}>
                   <Form.Group className="mb-3" controlId="supportName">
                     <Form.Label className="fw-semibold text-secondary">Your Name</Form.Label>
-                    <Form.Control type="text" placeholder="Irfan" className="py-2 rounded-3 form-custom-input" required />
+                    <Form.Control type="text" placeholder="Irfan" name="supportName" className="py-2 rounded-3 form-custom-input" required />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="supportEmail">
                     <Form.Label className="fw-semibold text-secondary">Email</Form.Label>
-                    <Form.Control type="email" placeholder="name@example.com" className="py-2 rounded-3 form-custom-input" required />
+                    <Form.Control type="email" placeholder="name@example.com" name="supportEmail" className="py-2 rounded-3 form-custom-input" required />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="supportMsg">
                     <Form.Label className="fw-semibold text-secondary">Message Description</Form.Label>
-                    <Form.Control as="textarea" rows={4} placeholder="Describe your query or refund details" className="rounded-3 form-custom-input" required />
+                    <Form.Control as="textarea" rows={4} name="supportMsg" placeholder="Describe your query or refund details" className="rounded-3 form-custom-input" required />
                   </Form.Group>
                   <Button variant="primary" type="submit" className="btn-color px-4 py-2 rounded-3 fw-bold shadow-sm">
                     Send Inquiry
@@ -112,13 +148,23 @@ const Home = () => {
                 </div>
                 <div className="fs-6 fw-bold ps-4 text-primary">support@aeroswift-airlines.com</div>
               </div>
-              <div className="p-3 bg-light rounded-3 border">
-                <div className="d-flex align-items-center gap-2 mb-1">
-                  <span className="material-icons text-primary font-size-18">chat</span>
-                  <strong className="text-dark">AI Chatbot Assist:</strong>
+
+              {supportInquiries.length > 0 && (
+                <div className="mt-4">
+                  <h6 className="fw-bold mb-2 text-dark">Submitted Tickets ({supportInquiries.length})</h6>
+                  <div className="d-flex flex-column gap-2" style={{ maxHeight: '180px', overflowY: 'auto' }}>
+                    {supportInquiries.map((ticket) => (
+                      <div key={ticket.id} className="p-2.5 bg-light rounded-3 border fs-7">
+                        <div className="d-flex justify-content-between font-weight-600">
+                          <span className="text-primary">{ticket.id}</span>
+                          <span className="text-muted fs-8">{ticket.date}</span>
+                        </div>
+                        <div className="text-truncate text-secondary">{ticket.msg}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="fs-7 ps-4 text-secondary-emphasis">Available 24/7 inside our Whatsapp channel. Scan booking barcode to initiate.</div>
-              </div>
+              )}
             </div>
           </div>
           )}
@@ -146,15 +192,36 @@ const Home = () => {
 
               <h5 className="fw-bold mt-4 mb-3 text-dark">UI Customization</h5>
               <div className="form-check form-switch mb-3">
-                <input className="form-check-input" type="checkbox" role="switch" id="themeSwitch" defaultChecked />
+                <input 
+                  className="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="themeSwitch" 
+                  checked={settings.glassmorphism}
+                  onChange={() => toggleSetting('glassmorphism')}
+                />
                 <label className="form-check-label fw-semibold text-secondary" htmlFor="themeSwitch">Enable Premium Glassmorphism styling</label>
               </div>
               <div className="form-check form-switch mb-3">
-                <input className="form-check-input" type="checkbox" role="switch" id="animSwitch" defaultChecked />
+                <input 
+                  className="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="animSwitch" 
+                  checked={settings.animations}
+                  onChange={() => toggleSetting('animations')}
+                />
                 <label className="form-check-label fw-semibold text-secondary" htmlFor="animSwitch">Enable hover lift animation filters</label>
               </div>
               <div className="form-check form-switch">
-                <input className="form-check-input" type="checkbox" role="switch" id="emailCacheSwitch" defaultChecked />
+                <input 
+                  className="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="emailCacheSwitch" 
+                  checked={settings.autoCacheEmail}
+                  onChange={() => toggleSetting('autoCacheEmail')}
+                />
                 <label className="form-check-label fw-semibold text-secondary" htmlFor="emailCacheSwitch">Auto-cache history lookup email in browser</label>
               </div>
             </div>

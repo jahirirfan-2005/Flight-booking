@@ -10,28 +10,21 @@ const FlightSliderDetails = ({ flights, onBook }) => {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 600,
+    speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    vertical: true,
-    verticalSwiping: true,
     autoplay: true,
     autoplaySpeed: 4000,
-    beforeChange: (currentSlide, nextSlide) => {
-      console.log("Before Change:", currentSlide, nextSlide);
-    },
-    afterChange: (currentSlide) => {
-      console.log("After Change:", currentSlide);
-    },
+    arrows: false
   };
 
   return (
     <div className="px-1">
-      <div className="slider-container" style={{ minHeight: "260px", width: "100%", maxWidth: "360px", margin: "0 auto" }}>
+      <div className="slider-container" style={{ width: "100%", margin: "0 auto" }}>
         <Slider {...settings}>
           {flights.map((flight) => (
-            <div key={flight.id} className="py-2">
-              <FlightsDetailCard flight={flight} onBook={onBook} />
+            <div key={flight.id} className="pb-3 px-1">
+              <FlightsDetailCard flight={flight} onBook={onBook} compact={true} />
             </div>
           ))}
         </Slider>

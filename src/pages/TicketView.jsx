@@ -147,22 +147,22 @@ const TicketView = ({ booking, onSearchRef }) => {
                 <div className="col-lg-8 border-end-dashed-md pe-lg-4">
                   <div className="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                      <h2 className="mb-0 fw-black text-dark text-uppercase">{activeBooking.flight_details.departure_city}</h2>
-                      <span className="fs-3 fw-bold text-primary">{activeBooking.flight_details.departure_airport}</span>
+                      <h2 className="mb-0 fw-black text-dark text-uppercase">{activeBooking.flight_details?.departure_city || 'N/A'}</h2>
+                      <span className="fs-3 fw-bold text-primary">{activeBooking.flight_details?.departure_airport || ''}</span>
                     </div>
                     
                     <div className="text-center flex-grow-1 px-4">
-                      <div className="fs-7 text-muted fw-bold mb-1">{activeBooking.flight_details.flight_number}</div>
+                      <div className="fs-7 text-muted fw-bold mb-1">{activeBooking.flight_details?.flight_number || ''}</div>
                       <div className="position-relative d-flex align-items-center justify-content-center">
                         <div style={{ borderTop: '2px dashed #4690f6', width: '100%' }}></div>
                         <span className="material-icons position-absolute text-primary bg-white px-2 rotate-90 font-size-20">local_airport</span>
                       </div>
-                      <div className="fs-7 text-success fw-bold mt-1">{activeBooking.flight_details.stops}</div>
+                      <div className="fs-7 text-success fw-bold mt-1">{activeBooking.flight_details?.stops || ''}</div>
                     </div>
 
                     <div className="text-end">
-                      <h2 className="mb-0 fw-black text-dark text-uppercase">{activeBooking.flight_details.arrival_city}</h2>
-                      <span className="fs-3 fw-bold text-primary">{activeBooking.flight_details.arrival_airport}</span>
+                      <h2 className="mb-0 fw-black text-dark text-uppercase">{activeBooking.flight_details?.arrival_city || 'N/A'}</h2>
+                      <span className="fs-3 fw-bold text-primary">{activeBooking.flight_details?.arrival_airport || ''}</span>
                     </div>
                   </div>
 
@@ -173,11 +173,11 @@ const TicketView = ({ booking, onSearchRef }) => {
                     </div>
                     <div className="col-6 col-md-3">
                       <small className="text-secondary d-block text-uppercase fw-semibold font-size-11">Date</small>
-                      <strong className="text-dark fs-6 d-block">{formatDate(activeBooking.flight_details.departure_time)}</strong>
+                      <strong className="text-dark fs-6 d-block">{formatDate(activeBooking.flight_details?.departure_time)}</strong>
                     </div>
                     <div className="col-6 col-md-3">
                       <small className="text-secondary d-block text-uppercase fw-semibold font-size-11">Gate</small>
-                      <strong className="text-dark fs-6 d-block">{getGate(activeBooking.flight_details.flight_number)}</strong>
+                      <strong className="text-dark fs-6 d-block">{getGate(activeBooking.flight_details?.flight_number)}</strong>
                     </div>
                     <div className="col-6 col-md-3">
                       <small className="text-secondary d-block text-uppercase fw-semibold font-size-11">Seat</small>
@@ -188,15 +188,15 @@ const TicketView = ({ booking, onSearchRef }) => {
                   <div className="row g-3 mt-1 pt-3">
                     <div className="col-6 col-md-3">
                       <small className="text-secondary d-block text-uppercase fw-semibold font-size-11">Departure</small>
-                      <strong className="text-dark fs-6 d-block">{formatTime(activeBooking.flight_details.departure_time)}</strong>
+                      <strong className="text-dark fs-6 d-block">{formatTime(activeBooking.flight_details?.departure_time)}</strong>
                     </div>
                     <div className="col-6 col-md-3">
                       <small className="text-secondary d-block text-uppercase fw-semibold font-size-11">Boarding Time</small>
-                      <strong className="text-primary fs-6 d-block">{getBoardingTime(activeBooking.flight_details.departure_time)}</strong>
+                      <strong className="text-primary fs-6 d-block">{getBoardingTime(activeBooking.flight_details?.departure_time)}</strong>
                     </div>
                     <div className="col-6 col-md-3">
                       <small className="text-secondary d-block text-uppercase fw-semibold font-size-11">Airline</small>
-                      <strong className="text-dark fs-6 d-block">{activeBooking.flight_details.airline_name}</strong>
+                      <strong className="text-dark fs-6 d-block">{activeBooking.flight_details?.airline_name || 'Airline'}</strong>
                     </div>
                     <div className="col-6 col-md-3">
                       <small className="text-secondary d-block text-uppercase fw-semibold font-size-11">PNR Reference</small>
@@ -238,7 +238,7 @@ const TicketView = ({ booking, onSearchRef }) => {
                     <div className="text-start w-100 p-3 bg-light rounded-3">
                       <div className="d-flex justify-content-between mb-1">
                         <span className="text-muted font-size-12">Carrier ID:</span>
-                        <strong className="text-dark font-size-12">{activeBooking.flight_details.flight_number}</strong>
+                        <strong className="text-dark font-size-12">{activeBooking.flight_details?.flight_number || 'N/A'}</strong>
                       </div>
                       <div className="d-flex justify-content-between">
                         <span className="text-muted font-size-12">Contact No:</span>
@@ -253,7 +253,7 @@ const TicketView = ({ booking, onSearchRef }) => {
             
             {/* Ticket Footer Accent Bar */}
             <div className="ticket-footer py-2 bg-light text-center border-top fs-7 text-secondary">
-              Thank you for choosing {activeBooking.flight_details.airline_name} • Have a safe flight!
+              Thank you for choosing {activeBooking.flight_details?.airline_name || 'AeroSwift Airlines'} • Have a safe flight!
             </div>
           </div>
         </div>

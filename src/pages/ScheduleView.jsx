@@ -7,6 +7,8 @@ import Alert from 'react-bootstrap/Alert';
 import Spinner from 'react-bootstrap/Spinner';
 import axios from 'axios';
 
+import { getAirlineLogo, DEFAULT_AIRLINE_LOGO } from '../utils/airlineLogos';
+
 const ScheduleView = ({ onSelectFlight }) => {
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -134,7 +136,14 @@ const ScheduleView = ({ onSelectFlight }) => {
                     <tr key={f.id}>
                       <td className="px-4 py-3">
                         <div className="d-flex align-items-center gap-2.5">
-                          <img src={f.logo_url || "https://img.icons8.com/ios-filled/100/airplane-tail-fin.png"} width={30} height={30} className="bg-light p-1 rounded border" alt="" />
+                          <img 
+                            src={getAirlineLogo(f.airline_name, f.logo_url)} 
+                            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
+                            width={30} 
+                            height={30} 
+                            className="bg-light p-1 rounded border object-fit-contain" 
+                            alt="" 
+                          />
                           <div>
                             <strong className="d-block text-dark">{f.airline_name}</strong>
                             <small className="text-secondary">{f.flight_number}</small>

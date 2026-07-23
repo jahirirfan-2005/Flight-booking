@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -27,6 +27,29 @@ const FlightSearchCard = ({ onSearch }) => {
   const [toSuggestions, setToSuggestions] = useState([]);
   const [showFromSuggestions, setShowFromSuggestions] = useState(false);
   const [showToSuggestions, setShowToSuggestions] = useState(false);
+
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cardRef.current && !cardRef.current.contains(event.target)) {
+        setShowFromSuggestions(false);
+        setShowToSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const swapCities = () => {
+    setUserdata(prev => ({
+      ...prev,
+      from: prev.to,
+      to: prev.from
+    }));
+    setShowFromSuggestions(false);
+    setShowToSuggestions(false);
+  };
 
   const handlechange = (e) => {
     const { name, value } = e.target;
@@ -84,8 +107,10 @@ const FlightSearchCard = ({ onSearch }) => {
     }
   };
 
+  const todayStr = new Date().toISOString().split('T')[0];
+
   return (
-    <div className="search-card-container">
+    <div className="search-card-container" ref={cardRef}>
       <Card className="card-design border-0 shadow-lg p-3 rounded-4 overflow-hidden position-relative">
         <div className="gradient-accent-bar"></div>
         <Card.Body className="pt-4">
@@ -118,9 +143,9 @@ const FlightSearchCard = ({ onSearch }) => {
               </div>
               
               <Form onSubmit={handleSubmit} className="position-relative">
-                <div className="row g-3">
+                <div className="row g-3 align-items-end">
                   {/* From Field */}
-                  <div className="col-md-6 position-relative">
+                  <div className="col-md-5 position-relative">
                     <Form.Group controlId="searchFrom">
                       <Form.Label className="fw-semibold text-secondary">From</Form.Label>
                       <Form.Control 
@@ -153,8 +178,22 @@ const FlightSearchCard = ({ onSearch }) => {
                     )}
                   </div>
 
+                  {/* Swap Button */}
+                  <div className="col-md-2 text-center d-flex justify-content-center">
+                    <Button 
+                      type="button" 
+                      variant="light" 
+                      onClick={swapCities} 
+                      title="Swap departure and destination"
+                      className="rounded-circle border shadow-sm p-2 d-flex align-items-center justify-content-center hover-lift"
+                      style={{ width: '42px', height: '42px' }}
+                    >
+                      <span className="material-icons text-primary font-size-20">swap_horiz</span>
+                    </Button>
+                  </div>
+
                   {/* To Field */}
-                  <div className="col-md-6 position-relative">
+                  <div className="col-md-5 position-relative">
                     <Form.Group controlId="searchTo">
                       <Form.Label className="fw-semibold text-secondary">To</Form.Label>
                       <Form.Control 
@@ -193,6 +232,7 @@ const FlightSearchCard = ({ onSearch }) => {
                       <Form.Label className="fw-semibold text-secondary">Departure Date</Form.Label>
                       <Form.Control 
                         type="date" 
+                        min={todayStr}
                         onChange={handlechange} 
                         value={userdata.date} 
                         name="date"

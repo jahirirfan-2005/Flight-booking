@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
 import axios from 'axios';
 
-const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "Economy" }) => {
+const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "Economy", passengers = 1 }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -19,11 +19,13 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
   });
 
   // Seat map state
-  const [selectedSeat, setSelectedSeat] = useState(null);
+  const [selectedSeats, setSelectedSeats] = useState([]);
   const [bookedSeats, setBookedSeats] = useState([]);
 
   // PNR Result
   const [bookingResult, setBookingResult] = useState(null);
+
+  const passengerCount = parseInt(passengers) || 1;
 
   // Sync default class on load
   useEffect(() => {
@@ -38,7 +40,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
       setStep(1);
       setErrorMsg(null);
       setBookingResult(null);
-      setSelectedSeat(null);
+      setSelectedSeats([]);
       setFormData({
         name: '',
         email: '',
@@ -53,7 +55,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
           const activeBookings = response.data.filter(
             b => b.flight === flight.id && b.status === "Confirmed"
           );
-          const seats = activeBookings.map(b => b.seat_number);
+          const seats = activeBookings.flatMap(b => (b.seat_number || '').split(',').map(s => s.trim()));
           
           // Generate some mock occupied seats based on flight number so the cabin looks alive
           const mockSeats = [];
@@ -91,7 +93,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
 
   if (!flight) return null;
 
-  // Calculate pricing based on travel class
+  // Calculate pricing based on travel class & passenger count
   const getBasePrice = () => parseFloat(flight.price);
   
   const getClassMultiplier = () => {
@@ -100,14 +102,14 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
     return 1.0;
   };
 
-  const getSubtotal = () => getBasePrice() * getClassMultiplier();
+  const getSubtotal = () => getBasePrice() * getClassMultiplier() * passengerCount;
   const getTax = () => getSubtotal() * 0.08; // 8% Tax
   const getSeatSelectionFee = () => {
-    if (!selectedSeat) return 0;
-    // Premium row seat fee (Rows 1-4)
-    const row = parseInt(selectedSeat);
-    if (row <= 4) return 1500;
-    return 300; // Economy rows
+    if (!selectedSeats || selectedSeats.length === 0) return 0;
+    return selectedSeats.reduce((sum, seat) => {
+      const row = parseInt(seat);
+      return sum + (row <= 4 ? 1500 : 300);
+    }, 0);
   };
   const getTotalPrice = () => getSubtotal() + getTax() + getSeatSelectionFee();
 
@@ -128,8 +130,8 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
       setErrorMsg(null);
     }
     if (step === 2) {
-      if (!selectedSeat) {
-        setErrorMsg("Please select a seat to proceed.");
+      if (selectedSeats.length < passengerCount) {
+        setErrorMsg(`Please select ${passengerCount} seat${passengerCount > 1 ? 's' : ''} to proceed (${selectedSeats.length} selected).`);
         return;
       }
       setErrorMsg(null);
@@ -144,7 +146,15 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
 
   const handleSeatClick = (seat) => {
     if (bookedSeats.includes(seat)) return; // Occupied
-    setSelectedSeat(seat);
+    setSelectedSeats(prev => {
+      if (prev.includes(seat)) {
+        return prev.filter(s => s !== seat);
+      }
+      if (prev.length < passengerCount) {
+        return [...prev, seat];
+      }
+      return [...prev.slice(0, passengerCount - 1), seat];
+    });
     setErrorMsg(null);
   };
 
@@ -158,7 +168,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
         passenger_name: formData.name,
         passenger_email: formData.email,
         passenger_phone: formData.phone,
-        seat_number: selectedSeat,
+        seat_number: selectedSeats.join(', '),
         ticket_class: formData.ticketClass
       };
 
@@ -210,7 +220,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
                 {cols.map((col, cIdx) => {
                   const seatCode = `${rowNum}${col}`;
                   const isOccupied = bookedSeats.includes(seatCode);
-                  const isSelected = selectedSeat === seatCode;
+                  const isSelected = selectedSeats.includes(seatCode);
                   
                   let seatClass = "seat-economy";
                   if (isFirstClassRow) seatClass = "seat-first";
@@ -234,7 +244,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
                       )}
                       <button
                         type="button"
-                        className={`btn seat-btn ${seatClass} d-flex align-items-center justify-content-center p-0 rounded`}
+                        className={`btn seat-btn ${seatClass} ${isSelected ? 'btn-success text-white' : ''} d-flex align-items-center justify-content-center p-0 rounded`}
                         style={{ width: '32px', height: '32px', fontSize: '11px', fontWeight: 'bold' }}
                         disabled={isOccupied}
                         onClick={() => handleSeatClick(seatCode)}
@@ -433,6 +443,10 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
                     <td className="fw-bold py-1.5">{formData.phone}</td>
                   </tr>
                   <tr>
+                    <td className="text-secondary ps-0 py-1.5">Travelers:</td>
+                    <td className="fw-bold py-1.5">{passengerCount} Passenger{passengerCount > 1 ? 's' : ''}</td>
+                  </tr>
+                  <tr>
                     <td className="text-secondary ps-0 py-1.5">Travel Class:</td>
                     <td className="fw-bold py-1.5">
                       <span className={`badge ${formData.ticketClass === 'First' ? 'bg-warning text-dark' : formData.ticketClass === 'Business' ? 'bg-info text-dark' : 'bg-primary'}`}>
@@ -441,8 +455,8 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
                     </td>
                   </tr>
                   <tr>
-                    <td className="text-secondary ps-0 py-1.5">Selected Seat:</td>
-                    <td className="fw-bold text-success py-1.5 fs-5">{selectedSeat}</td>
+                    <td className="text-secondary ps-0 py-1.5">Selected Seat(s):</td>
+                    <td className="fw-bold text-success py-1.5 fs-5">{selectedSeats.join(', ') || 'None'}</td>
                   </tr>
                 </tbody>
               </table>
@@ -476,8 +490,8 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
               <div className="card border-0 bg-light-subtle shadow-sm rounded-4 p-4 border-end border-success border-4 h-100">
                 <h5 className="fw-bold mb-3 border-bottom pb-2">Fare Breakdown</h5>
                 <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">Base Fare (Economy):</span>
-                  <span>₹{getBasePrice().toLocaleString('en-IN')}</span>
+                  <span className="text-muted">Base Fare ({passengerCount} x Standard):</span>
+                  <span>₹{(getBasePrice() * passengerCount).toLocaleString('en-IN')}</span>
                 </div>
                 {formData.ticketClass !== 'Economy' && (
                   <div className="d-flex justify-content-between mb-2 text-info-emphasis">
@@ -486,7 +500,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
                   </div>
                 )}
                 <div className="d-flex justify-content-between mb-2">
-                  <span className="text-muted">Seat Selection Fee ({selectedSeat}):</span>
+                  <span className="text-muted">Seat Fees ({selectedSeats.join(', ')}):</span>
                   <span>₹{getSeatSelectionFee().toLocaleString('en-IN')}</span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">

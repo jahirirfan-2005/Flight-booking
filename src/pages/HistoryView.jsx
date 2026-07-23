@@ -9,6 +9,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
 
+import { getAirlineLogo, DEFAULT_AIRLINE_LOGO } from '../utils/airlineLogos';
+
 const HistoryView = ({ onViewTicket }) => {
   const [emailInput, setEmailInput] = useState(() => {
     return localStorage.getItem('passenger_history_email') || '';
@@ -149,18 +151,25 @@ const HistoryView = ({ onViewTicket }) => {
                       <td className="px-4 py-3 fw-bold text-primary tracking-wider">{b.booking_reference}</td>
                       <td className="py-3">
                         <div className="d-flex align-items-center">
-                          <strong>{b.flight_details.departure_city}</strong>
+                          <strong>{b.flight_details?.departure_city || 'N/A'}</strong>
                           <span className="mx-2 text-muted">→</span>
-                          <strong>{b.flight_details.arrival_city}</strong>
+                          <strong>{b.flight_details?.arrival_city || 'N/A'}</strong>
                         </div>
-                        <small className="text-secondary">{b.flight_details.departure_airport} • {b.flight_details.arrival_airport}</small>
+                        <small className="text-secondary">{b.flight_details?.departure_airport || ''} • {b.flight_details?.arrival_airport || ''}</small>
                       </td>
                       <td className="py-3">
                         <div className="d-flex align-items-center gap-1.5">
-                          <img src={b.flight_details.logo_url || "https://img.icons8.com/ios-filled/100/airplane-tail-fin.png"} width={22} alt="" />
-                          <span>{b.flight_details.airline_name}</span>
+                          <img 
+                            src={getAirlineLogo(b.flight_details?.airline_name, b.flight_details?.logo_url)} 
+                            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
+                            width={22} 
+                            height={22} 
+                            className="object-fit-contain" 
+                            alt="" 
+                          />
+                          <span>{b.flight_details?.airline_name || 'Airline'}</span>
                         </div>
-                        <small className="text-secondary">{b.flight_details.flight_number} | {formatTime(b.flight_details.departure_time)}</small>
+                        <small className="text-secondary">{b.flight_details?.flight_number || ''} | {b.flight_details?.departure_time ? formatTime(b.flight_details.departure_time) : ''}</small>
                       </td>
                       <td className="py-3">
                         <div className="fw-bold">{b.passenger_name}</div>

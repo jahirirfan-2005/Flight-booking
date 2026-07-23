@@ -57,7 +57,7 @@ const Main = ({ onBookingSuccess, onSelectDirectFlight, preselectedFlight, clear
           price: 5200,
           available_seats: 45,
           stops: "Non-stop",
-          logo_url: "https://img.icons8.com/color/100/air-india.png"
+          logo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Air_India_Logo.svg/256px-Air_India_Logo.svg.png"
         },
         {
           id: 9992,
@@ -72,7 +72,7 @@ const Main = ({ onBookingSuccess, onSelectDirectFlight, preselectedFlight, clear
           price: 24500,
           available_seats: 12,
           stops: "Non-stop",
-          logo_url: "https://img.icons8.com/color/100/emirates.png"
+          logo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Emirates_logo.svg/256px-Emirates_logo.svg.png"
         },
         {
           id: 9993,
@@ -87,7 +87,7 @@ const Main = ({ onBookingSuccess, onSelectDirectFlight, preselectedFlight, clear
           price: 4300,
           available_seats: 5,
           stops: "Non-stop",
-          logo_url: "https://img.icons8.com/color/100/indigo-carrier.png"
+          logo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/IndiGo_logo.svg/256px-IndiGo_logo.svg.png"
         }
       ]);
     } finally {
@@ -320,6 +320,7 @@ const Main = ({ onBookingSuccess, onSelectDirectFlight, preselectedFlight, clear
           flight={selectedFlight} 
           onBookingSuccess={handleBookingSuccess}
           initialClass={searchParams.travelClass}
+          passengers={searchParams.passengers}
         />
       )}
     </div>

@@ -1,8 +1,11 @@
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import { getAirlineLogo, DEFAULT_AIRLINE_LOGO } from "../utils/airlineLogos";
 
-const FlightsDetailCard = ({ flight, onBook }) => {
+const FlightsDetailCard = ({ flight, onBook, compact = false }) => {
   if (!flight) return null;
+
+  const logoSrc = getAirlineLogo(flight.airline_name, flight.logo_url);
 
   // Format datetimes
   const depDate = new Date(flight.departure_time);
@@ -22,6 +25,66 @@ const FlightsDetailCard = ({ flight, onBook }) => {
   const minutes = Math.round((durationMs % (1000 * 60 * 60)) / (1000 * 60));
   const durationStr = `${hours}h ${minutes}m`;
 
+  if (compact) {
+    return (
+      <Card className="flight-detail-card border shadow-sm rounded-4 overflow-hidden position-relative bg-white">
+        <Card.Body className="p-3">
+          <div className="d-flex align-items-center justify-content-between mb-3">
+            <div className="d-flex align-items-center gap-2">
+              <img
+                src={logoSrc}
+                onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
+                alt={flight.airline_name}
+                width={36}
+                height={36}
+                className="p-1 rounded bg-light border object-fit-contain"
+              />
+              <div>
+                <h6 className="mb-0 fw-bold text-dark fs-7">{flight.airline_name}</h6>
+                <small className="text-secondary fs-8">{flight.flight_number}</small>
+              </div>
+            </div>
+            <span className="badge bg-warning-subtle text-warning-emphasis fw-bold fs-8">
+              {flight.available_seats} seats left
+            </span>
+          </div>
+
+          <div className="d-flex align-items-center justify-content-between text-center bg-light p-2.5 rounded-3 mb-3">
+            <div className="text-start">
+              <span className="fs-6 fw-bold text-primary d-block">{formatTime(depDate)}</span>
+              <span className="fw-bold text-dark fs-7">{flight.departure_airport}</span>
+            </div>
+            <div className="px-2">
+              <small className="text-muted fs-8 d-block">{durationStr}</small>
+              <span className="material-icons text-primary font-size-16 rotate-90">flight_takeoff</span>
+              <small className="text-success fw-semibold fs-8 d-block">{flight.stops}</small>
+            </div>
+            <div className="text-end">
+              <span className="fs-6 fw-bold text-primary d-block">{formatTime(arrDate)}</span>
+              <span className="fw-bold text-dark fs-7">{flight.arrival_airport}</span>
+            </div>
+          </div>
+
+          <div className="d-flex align-items-center justify-content-between pt-1">
+            <div>
+              <small className="text-muted d-block font-size-11">Price per passenger</small>
+              <strong className="fs-5 fw-black text-dark">₹{parseFloat(flight.price).toLocaleString('en-IN')}</strong>
+            </div>
+            <Button
+              variant="primary"
+              size="sm"
+              className="rounded-3 px-3 py-1.5 fw-bold btn-color shadow-sm fs-7"
+              onClick={() => onBook(flight)}
+              disabled={flight.available_seats <= 0}
+            >
+              {flight.available_seats > 0 ? "Book Deal" : "Sold Out"}
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+    );
+  }
+
   return (
     <Card className="flight-detail-card border-0 shadow-sm rounded-4 mb-3 overflow-hidden position-relative hover-lift">
       <Card.Body className="p-4">
@@ -31,9 +94,10 @@ const FlightsDetailCard = ({ flight, onBook }) => {
           <div className="col-lg-3 col-md-12 d-flex align-items-center">
             <div className="airline-logo-container p-2 rounded-3 bg-light d-flex align-items-center justify-content-center">
               <img
-                src={flight.logo_url || "https://img.icons8.com/ios-filled/100/airplane-tail-fin.png"}
+                src={logoSrc}
+                onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
                 alt={flight.airline_name}
-                className="airline-logo-img"
+                className="airline-logo-img object-fit-contain"
               />
             </div>
             <div className="ms-3">
