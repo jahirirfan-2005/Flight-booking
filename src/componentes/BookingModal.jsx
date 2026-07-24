@@ -50,7 +50,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
       
       const fetchBookedSeats = async () => {
         try {
-          const response = await axios.get(`http://localhost:8000/api/bookings/`);
+          const response = await axios.get('https://flight-booking-backend-production-9241.up.railway.app/api/bookings/');
           // Filter bookings for this flight that are Confirmed
           const activeBookings = response.data.filter(
             b => b.flight === flight.id && b.status === "Confirmed"
