@@ -123,7 +123,7 @@ const Main = ({ onBookingSuccess, onSelectDirectFlight, preselectedFlight, clear
     try {
       // Build query string
       const response = await axios.get(
-        `http://localhost:8000/api/flights/?from=${encodeURIComponent(userdata.from)}&to=${encodeURIComponent(userdata.to)}&date=${userdata.date}`
+        `https://flight-booking-backend-production-9241.up.railway.app/api/flights/?from=${encodeURIComponent(userdata.from)}&to=${encodeURIComponent(userdata.to)}&date=${userdata.date}`
       );
       setFlights(response.data);
     } catch (error) {
