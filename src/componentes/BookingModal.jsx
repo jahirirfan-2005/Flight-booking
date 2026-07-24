@@ -172,7 +172,7 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
         ticket_class: formData.ticketClass
       };
 
-      const response = await axios.post("http://localhost:8000/api/bookings/", payload);
+      const response = await axios.post("https://flight-booking-backend-production-9241.up.railway.app/api/bookings/", payload);
       setBookingResult(response.data);
       setStep(4);
       if (onBookingSuccess) {

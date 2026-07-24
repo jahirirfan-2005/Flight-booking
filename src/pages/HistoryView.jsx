@@ -30,7 +30,7 @@ const HistoryView = ({ onViewTicket }) => {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const response = await axios.get(`http://localhost:8000/api/bookings/?email=${emailToFetch.trim()}`);
+      const response = await axios.get(`https://flight-booking-backend-production-9241.up.railway.app/api/bookings/?email=${emailToFetch.trim()}`);
       setBookings(response.data);
       localStorage.setItem('passenger_history_email', emailToFetch.trim());
     } catch (error) {
@@ -63,7 +63,7 @@ const HistoryView = ({ onViewTicket }) => {
     setSuccessMsg(null);
 
     try {
-      const response = await axios.post(`http://localhost:8000/api/bookings/${bookingId}/cancel/`);
+      const response = await axios.post(`https://flight-booking-backend-production-9241.up.railway.app/api/bookings/${bookingId}/cancel/`);
       setSuccessMsg(`Booking ${response.data.booking_reference} has been cancelled successfully.`);
       
       // Update local state list

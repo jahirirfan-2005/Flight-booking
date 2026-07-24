@@ -26,7 +26,7 @@ const TicketView = ({ booking, onSearchRef }) => {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const response = await axios.get(`http://localhost:8000/api/bookings/by-reference/${pnrInput.trim()}/`);
+      const response = await axios.get(`https://flight-booking-backend-production-9241.up.railway.app/api/bookings/by-reference/${pnrInput.trim()}`);
       setActiveBooking(response.data);
     } catch (error) {
       console.error(error);

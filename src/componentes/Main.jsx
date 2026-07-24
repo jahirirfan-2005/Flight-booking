@@ -36,7 +36,7 @@ const Main = ({ onBookingSuccess, onSelectDirectFlight, preselectedFlight, clear
     setLoading(true);
     setErrorMsg(null);
     try {
-      const response = await axios.get("http://localhost:8000/api/flights/");
+      const response = await axios.get("https://flight-booking-backend-production-9241.up.railway.app/api/flights/");
       setFlights(response.data);
     } catch (error) {
       console.error(error);

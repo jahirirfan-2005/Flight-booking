@@ -186,7 +186,7 @@ const Home = () => {
               <h5 className="fw-bold mb-3 text-dark">Server Endpoints</h5>
               <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold text-secondary">Django Core API Base Endpoint</Form.Label>
-                <Form.Control type="text" value="http://localhost:8000/api/" disabled className="py-2.5 rounded-3 form-custom-input font-monospace bg-light-subtle" />
+                <Form.Control type="text" value="https://flight-booking-backend-production-9241.up.railway.app/api/" disabled className="py-2.5 rounded-3 form-custom-input font-monospace bg-light-subtle" />
                 <Form.Text className="text-muted">Currently routed to live local flight engine.</Form.Text>
               </Form.Group>
 
