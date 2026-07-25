@@ -147,24 +147,26 @@ const FlightsDetailCard = ({ flight, onBook, compact = false }) => {
           </div>
 
           {/* Pricing & Booking CTA */}
-          <div className="col-lg-3 col-md-4 text-end border-start-lg ps-lg-4">
-            <div className="mb-2">
-              <span className="text-muted d-block fs-7">Price per passenger</span>
-              <span className="fs-2 fw-black text-dark d-block">₹{parseFloat(flight.price).toLocaleString('en-IN')}</span>
-            </div>
-            
-            <div className="d-flex flex-column align-items-end gap-1 w-100">
-              <span className="badge bg-warning-subtle text-warning-emphasis mb-2 fw-bold">
-                {flight.available_seats} seats left
-              </span>
-              <Button
-                variant="primary"
-                className="w-100 rounded-3 py-2 fw-bold btn-color text-uppercase letter-spacing-1 shadow-sm fs-6"
-                onClick={() => onBook(flight)}
-                disabled={flight.available_seats <= 0}
-              >
-                {flight.available_seats > 0 ? "Book Now" : "Sold Out"}
-              </Button>
+          <div className="col-lg-3 col-md-4 border-start-lg ps-lg-4 text-start text-md-end mt-3 mt-md-0 pt-3 pt-md-0 border-top border-top-md-0 border-light">
+            <div className="d-flex flex-row flex-md-column justify-content-between align-items-center align-items-md-end w-100 gap-2">
+              <div className="text-start text-md-end">
+                <span className="text-muted d-block fs-7">Price per passenger</span>
+                <span className="fs-2 fw-black text-dark d-block">₹{parseFloat(flight.price).toLocaleString('en-IN')}</span>
+              </div>
+              
+              <div className="d-flex flex-column align-items-end gap-1">
+                <span className="badge bg-warning-subtle text-warning-emphasis mb-1 mb-md-2 fw-bold align-self-end">
+                  {flight.available_seats} seats left
+                </span>
+                <Button
+                  variant="primary"
+                  className="rounded-3 py-2 px-4 px-md-3 w-md-100 fw-bold btn-color text-uppercase letter-spacing-1 shadow-sm fs-6"
+                  onClick={() => onBook(flight)}
+                  disabled={flight.available_seats <= 0}
+                >
+                  {flight.available_seats > 0 ? "Book Now" : "Sold Out"}
+                </Button>
+              </div>
             </div>
           </div>
 

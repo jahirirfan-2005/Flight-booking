@@ -193,94 +193,96 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
     const cols = ['A', 'B', 'C', 'D', 'E', 'F'];
     
     return (
-      <div className="cabin-map my-3 p-3 bg-light rounded-4 border">
-        {/* Plane Front Indicator */}
-        <div className="plane-nose text-center py-2 mb-4 bg-secondary text-white rounded-pill fw-bold fs-7">
-          FLIGHT DECK / COCKPIT
-        </div>
-
-        <div className="d-flex justify-content-around text-center fw-bold text-secondary mb-2 fs-7 px-4">
-          <div style={{ width: '30px' }}>A</div>
-          <div style={{ width: '30px' }}>B</div>
-          <div style={{ width: '30px' }}>C</div>
-          <div style={{ width: '20px' }}></div>
-          <div style={{ width: '30px' }}>D</div>
-          <div style={{ width: '30px' }}>E</div>
-          <div style={{ width: '30px' }}>F</div>
-        </div>
-
-        <div className="seat-grid d-flex flex-column gap-2 overflow-y-auto" style={{ maxHeight: '280px' }}>
-          {Array.from({ length: rows }).map((_, rIdx) => {
-            const rowNum = rIdx + 1;
-            const isFirstClassRow = rowNum <= 2;
-            const isBusinessClassRow = rowNum > 2 && rowNum <= 4;
-            
-            return (
-              <div key={rowNum} className="d-flex align-items-center justify-content-around">
-                {cols.map((col, cIdx) => {
-                  const seatCode = `${rowNum}${col}`;
-                  const isOccupied = bookedSeats.includes(seatCode);
-                  const isSelected = selectedSeats.includes(seatCode);
-                  
-                  let seatClass = "seat-economy";
-                  if (isFirstClassRow) seatClass = "seat-first";
-                  else if (isBusinessClassRow) seatClass = "seat-business";
-
-                  let btnVariant = "outline-primary";
-                  if (isOccupied) btnVariant = "secondary disabled-seat";
-                  else if (isSelected) btnVariant = "success selected-seat";
-                  else if (isFirstClassRow) btnVariant = "outline-warning";
-                  else if (isBusinessClassRow) btnVariant = "outline-info";
-                  
-                  // Add gap in center for aisle
-                  const renderAisle = cIdx === 3;
-
-                  return (
-                    <span key={col} className="d-flex align-items-center">
-                      {renderAisle && (
-                        <span className="aisle text-muted fw-bold d-flex align-items-center justify-content-center mx-2 fs-7" style={{ width: '20px' }}>
-                          {rowNum}
-                        </span>
-                      )}
-                      <button
-                        type="button"
-                        className={`btn seat-btn ${seatClass} ${isSelected ? 'btn-success text-white' : ''} d-flex align-items-center justify-content-center p-0 rounded`}
-                        style={{ width: '32px', height: '32px', fontSize: '11px', fontWeight: 'bold' }}
-                        disabled={isOccupied}
-                        onClick={() => handleSeatClick(seatCode)}
-                        title={`${seatCode} (${isFirstClassRow ? 'First' : isBusinessClassRow ? 'Business' : 'Economy'})`}
-                      >
-                        {col}
-                      </button>
-                    </span>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-        
-        {/* Legend */}
-        <div className="d-flex flex-wrap justify-content-center gap-3 mt-4 border-top pt-3 fs-7">
-          <div className="d-flex align-items-center gap-1.5">
-            <span className="legend-box bg-secondary rounded" style={{ width: '14px', height: '14px' }}></span>
-            <span>Occupied</span>
+      <div className="cabin-map my-3 p-3 bg-light rounded-4 border overflow-x-auto">
+        <div style={{ minWidth: '280px' }}>
+          {/* Plane Front Indicator */}
+          <div className="plane-nose text-center py-2 mb-4 bg-secondary text-white rounded-pill fw-bold fs-7">
+            FLIGHT DECK / COCKPIT
           </div>
-          <div className="d-flex align-items-center gap-1.5">
-            <span className="legend-box bg-success rounded" style={{ width: '14px', height: '14px' }}></span>
-            <span>Selected</span>
+
+          <div className="d-flex justify-content-around text-center fw-bold text-secondary mb-2 fs-7 px-4">
+            <div style={{ width: '30px' }}>A</div>
+            <div style={{ width: '30px' }}>B</div>
+            <div style={{ width: '30px' }}>C</div>
+            <div style={{ width: '20px' }}></div>
+            <div style={{ width: '30px' }}>D</div>
+            <div style={{ width: '30px' }}>E</div>
+            <div style={{ width: '30px' }}>F</div>
           </div>
-          <div className="d-flex align-items-center gap-1.5">
-            <span className="legend-box border border-warning rounded" style={{ width: '14px', height: '14px' }}></span>
-            <span>First Class</span>
+
+          <div className="seat-grid d-flex flex-column gap-2 overflow-y-auto" style={{ maxHeight: '280px' }}>
+            {Array.from({ length: rows }).map((_, rIdx) => {
+              const rowNum = rIdx + 1;
+              const isFirstClassRow = rowNum <= 2;
+              const isBusinessClassRow = rowNum > 2 && rowNum <= 4;
+              
+              return (
+                <div key={rowNum} className="d-flex align-items-center justify-content-around">
+                  {cols.map((col, cIdx) => {
+                    const seatCode = `${rowNum}${col}`;
+                    const isOccupied = bookedSeats.includes(seatCode);
+                    const isSelected = selectedSeats.includes(seatCode);
+                    
+                    let seatClass = "seat-economy";
+                    if (isFirstClassRow) seatClass = "seat-first";
+                    else if (isBusinessClassRow) seatClass = "seat-business";
+
+                    let btnVariant = "outline-primary";
+                    if (isOccupied) btnVariant = "secondary disabled-seat";
+                    else if (isSelected) btnVariant = "success selected-seat";
+                    else if (isFirstClassRow) btnVariant = "outline-warning";
+                    else if (isBusinessClassRow) btnVariant = "outline-info";
+                    
+                    // Add gap in center for aisle
+                    const renderAisle = cIdx === 3;
+
+                    return (
+                      <span key={col} className="d-flex align-items-center">
+                        {renderAisle && (
+                          <span className="aisle text-muted fw-bold d-flex align-items-center justify-content-center mx-2 fs-7" style={{ width: '20px' }}>
+                            {rowNum}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          className={`btn seat-btn ${seatClass} ${isSelected ? 'btn-success text-white' : ''} d-flex align-items-center justify-content-center p-0 rounded`}
+                          style={{ width: '32px', height: '32px', fontSize: '11px', fontWeight: 'bold' }}
+                          disabled={isOccupied}
+                          onClick={() => handleSeatClick(seatCode)}
+                          title={`${seatCode} (${isFirstClassRow ? 'First' : isBusinessClassRow ? 'Business' : 'Economy'})`}
+                        >
+                          {col}
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
-          <div className="d-flex align-items-center gap-1.5">
-            <span className="legend-box border border-info rounded" style={{ width: '14px', height: '14px' }}></span>
-            <span>Business</span>
-          </div>
-          <div className="d-flex align-items-center gap-1.5">
-            <span className="legend-box border border-primary rounded" style={{ width: '14px', height: '14px' }}></span>
-            <span>Economy</span>
+          
+          {/* Legend */}
+          <div className="d-flex flex-wrap justify-content-center gap-3 mt-4 border-top pt-3 fs-7">
+            <div className="d-flex align-items-center gap-1.5">
+              <span className="legend-box bg-secondary rounded" style={{ width: '14px', height: '14px' }}></span>
+              <span>Occupied</span>
+            </div>
+            <div className="d-flex align-items-center gap-1.5">
+              <span className="legend-box bg-success rounded" style={{ width: '14px', height: '14px' }}></span>
+              <span>Selected</span>
+            </div>
+            <div className="d-flex align-items-center gap-1.5">
+              <span className="legend-box border border-warning rounded" style={{ width: '14px', height: '14px' }}></span>
+              <span>First Class</span>
+            </div>
+            <div className="d-flex align-items-center gap-1.5">
+              <span className="legend-box border border-info rounded" style={{ width: '14px', height: '14px' }}></span>
+              <span>Business</span>
+            </div>
+            <div className="d-flex align-items-center gap-1.5">
+              <span className="legend-box border border-primary rounded" style={{ width: '14px', height: '14px' }}></span>
+              <span>Economy</span>
+            </div>
           </div>
         </div>
       </div>
@@ -311,9 +313,18 @@ const BookingModal = ({ show, onHide, flight, onBookingSuccess, initialClass = "
               <div className={`progress-dot z-1 ${step >= 3 ? 'active' : ''}`}>3</div>
             </div>
             <div className="d-flex justify-content-between text-muted fs-7 font-weight-600 px-1 mt-1">
-              <div>Traveler Info</div>
-              <div className="text-center">Seat Selection</div>
-              <div className="text-end">Payment & Review</div>
+              <div>
+                <span className="d-none d-sm-inline">Traveler Info</span>
+                <span className="d-inline d-sm-none">Traveler</span>
+              </div>
+              <div className="text-center">
+                <span className="d-none d-sm-inline">Seat Selection</span>
+                <span className="d-inline d-sm-none">Seat</span>
+              </div>
+              <div className="text-end">
+                <span className="d-none d-sm-inline">Payment & Review</span>
+                <span className="d-inline d-sm-none">Payment</span>
+              </div>
             </div>
           </div>
         )}

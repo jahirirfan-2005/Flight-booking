@@ -11,6 +11,7 @@ import Alert from "react-bootstrap/Alert";
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState("Home");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeBooking, setActiveBooking] = useState(null);
   const [preselectedFlight, setPreselectedFlight] = useState(null);
   const [settings, setSettings] = useState(() => {
@@ -248,13 +249,47 @@ const Home = () => {
     </div>
   );
 
+  const handlePageChange = (pageId) => {
+    setCurrentPage(pageId);
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="d-flex w-100 flex-column flex-md-row min-vh-100 bg-body-tertiary">
-      {/* Sidebar Panel */}
-      <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
+      {/* Mobile Sticky Header Bar */}
+      <div className="mobile-header-bar d-flex d-md-none justify-content-between align-items-center px-3 py-2.5 w-100 no-print">
+        <div className="d-flex align-items-center gap-2" onClick={() => setIsSidebarOpen(true)}>
+          <span className="material-icons text-primary cursor-pointer font-size-28">menu</span>
+          <div className="d-flex align-items-center gap-1">
+            <span className="material-icons text-primary font-size-22">flight_takeoff</span>
+            <h5 className="mb-0 fw-black text-dark brand-text font-size-18">AeroSwift</h5>
+          </div>
+        </div>
+        <div className="d-flex align-items-center gap-2">
+          <span className="avatar bg-primary text-white rounded-circle fw-bold d-flex align-items-center justify-content-center font-size-14" style={{ width: '32px', height: '32px' }}>
+            I
+          </span>
+        </div>
+      </div>
+
+      {/* Sidebar Panel Drawer */}
+      <Sidebar 
+        currentPage={currentPage} 
+        onPageChange={handlePageChange} 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+      />
+
+      {/* Backdrop overlay for mobile drawer */}
+      {isSidebarOpen && (
+        <div 
+          className="sidebar-backdrop d-md-none no-print" 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       
       {/* Main Content Area */}
-      <div className="main-container flex-grow-1 p-3 p-md-4 p-lg-5 overflow-x-hidden">
+      <div className="main-container flex-grow-1 p-3 p-md-4 p-lg-5 overflow-x-hidden w-100">
         <header className="no-print d-flex justify-content-between align-items-center mb-4">
           <div>
             <h1 className="fw-black text-dark mb-1 h3">

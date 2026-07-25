@@ -98,7 +98,7 @@ const HistoryView = ({ onViewTicket }) => {
       <Card className="card-design border-0 shadow-sm p-3 rounded-4 mb-4">
         <Card.Body>
           <h5 className="fw-bold mb-3">Lookup Booking History</h5>
-          <Form onSubmit={handleSearch} className="d-flex gap-3 align-items-end">
+          <Form onSubmit={handleSearch} className="d-flex flex-column flex-sm-row gap-3 align-items-sm-end">
             <Form.Group className="flex-fill" controlId="emailHistoryInput">
               <Form.Label className="fw-semibold text-secondary">Enter Passenger Email Address</Form.Label>
               <Form.Control 
@@ -113,7 +113,7 @@ const HistoryView = ({ onViewTicket }) => {
               variant="primary" 
               type="submit" 
               disabled={loading}
-              className="btn-color px-4 py-2.5 rounded-3 fw-bold shadow-sm"
+              className="btn-color px-4 py-2.5 rounded-3 fw-bold shadow-sm w-100 w-sm-auto d-flex align-items-center justify-content-center"
               style={{ height: '48px' }}
             >
               {loading ? <Spinner animation="border" size="sm" /> : "Fetch History"}
@@ -132,64 +132,150 @@ const HistoryView = ({ onViewTicket }) => {
         </Card.Header>
         <Card.Body className="p-0">
           {bookings.length > 0 ? (
-            <div className="table-responsive">
-              <Table hover className="align-middle mb-0 text-nowrap table-custom">
-                <thead className="table-light">
-                  <tr>
-                    <th className="px-4 py-3 text-secondary-emphasis">PNR</th>
-                    <th className="py-3 text-secondary-emphasis">Route</th>
-                    <th className="py-3 text-secondary-emphasis">Flight Details</th>
-                    <th className="py-3 text-secondary-emphasis">Passenger / Seat</th>
-                    <th className="py-3 text-secondary-emphasis">Booking Date</th>
-                    <th className="py-3 text-secondary-emphasis text-center">Status</th>
-                    <th className="px-4 py-3 text-end text-secondary-emphasis">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <>
+              {/* Desktop Table View */}
+              <div className="table-responsive d-none d-md-block">
+                <Table hover className="align-middle mb-0 text-nowrap table-custom">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="px-4 py-3 text-secondary-emphasis">PNR</th>
+                      <th className="py-3 text-secondary-emphasis">Route</th>
+                      <th className="py-3 text-secondary-emphasis">Flight Details</th>
+                      <th className="py-3 text-secondary-emphasis">Passenger / Seat</th>
+                      <th className="py-3 text-secondary-emphasis">Booking Date</th>
+                      <th className="py-3 text-secondary-emphasis text-center">Status</th>
+                      <th className="px-4 py-3 text-end text-secondary-emphasis">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {bookings.map((b) => (
+                      <tr key={b.id}>
+                        <td className="px-4 py-3 fw-bold text-primary tracking-wider">{b.booking_reference}</td>
+                        <td className="py-3">
+                          <div className="d-flex align-items-center">
+                            <strong>{b.flight_details?.departure_city || 'N/A'}</strong>
+                            <span className="mx-2 text-muted">→</span>
+                            <strong>{b.flight_details?.arrival_city || 'N/A'}</strong>
+                          </div>
+                          <small className="text-secondary">{b.flight_details?.departure_airport || ''} • {b.flight_details?.arrival_airport || ''}</small>
+                        </td>
+                        <td className="py-3">
+                          <div className="d-flex align-items-center gap-1.5">
+                            <img 
+                              src={getAirlineLogo(b.flight_details?.airline_name, b.flight_details?.logo_url)} 
+                              onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
+                              width={22} 
+                              height={22} 
+                              className="object-fit-contain" 
+                              alt="" 
+                            />
+                            <span>{b.flight_details?.airline_name || 'Airline'}</span>
+                          </div>
+                          <small className="text-secondary">{b.flight_details?.flight_number || ''} | {b.flight_details?.departure_time ? formatTime(b.flight_details.departure_time) : ''}</small>
+                        </td>
+                        <td className="py-3">
+                          <div className="fw-bold">{b.passenger_name}</div>
+                          <small className="text-secondary">Seat {b.seat_number} ({b.ticket_class})</small>
+                        </td>
+                        <td className="py-3">{formatDate(b.booking_date)}</td>
+                        <td className="py-3 text-center">
+                          <Badge 
+                            bg={b.status === 'Confirmed' ? 'success' : 'danger'} 
+                            className="px-2.5 py-1.5 rounded-pill fw-semibold"
+                          >
+                            {b.status}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-end">
+                          <div className="d-flex justify-content-end gap-2">
+                            <Button 
+                              variant="outline-primary" 
+                              size="sm" 
+                              className="rounded-2 px-2.5 py-1.5 font-weight-600"
+                              onClick={() => onViewTicket(b)}
+                            >
+                              Boarding Pass
+                            </Button>
+                            {b.status === 'Confirmed' && (
+                              <Button 
+                                variant="outline-danger" 
+                                size="sm" 
+                                className="rounded-2 px-2.5 py-1.5 font-weight-600"
+                                disabled={cancelLoadingId === b.id}
+                                onClick={() => requestCancelBooking(b)}
+                              >
+                                {cancelLoadingId === b.id ? "..." : "Cancel"}
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards List View */}
+              <div className="d-block d-md-none p-3">
+                <div className="d-flex flex-column gap-3">
                   {bookings.map((b) => (
-                    <tr key={b.id}>
-                      <td className="px-4 py-3 fw-bold text-primary tracking-wider">{b.booking_reference}</td>
-                      <td className="py-3">
-                        <div className="d-flex align-items-center">
-                          <strong>{b.flight_details?.departure_city || 'N/A'}</strong>
-                          <span className="mx-2 text-muted">→</span>
-                          <strong>{b.flight_details?.arrival_city || 'N/A'}</strong>
+                    <Card key={b.id} className="border shadow-sm rounded-4 overflow-hidden bg-white">
+                      <Card.Body className="p-3">
+                        <div className="d-flex justify-content-between align-items-center mb-2.5">
+                          <span className="fw-black text-primary font-size-14 tracking-wider">{b.booking_reference}</span>
+                          <Badge 
+                            bg={b.status === 'Confirmed' ? 'success' : 'danger'} 
+                            className="px-2.5 py-1.5 rounded-pill fw-semibold"
+                          >
+                            {b.status}
+                          </Badge>
                         </div>
-                        <small className="text-secondary">{b.flight_details?.departure_airport || ''} • {b.flight_details?.arrival_airport || ''}</small>
-                      </td>
-                      <td className="py-3">
-                        <div className="d-flex align-items-center gap-1.5">
+                        
+                        <div className="bg-light p-2.5 rounded-3 mb-3 fs-7">
+                          <div className="d-flex align-items-center justify-content-between font-weight-600 mb-1">
+                            <span className="text-dark">{b.flight_details?.departure_city || 'N/A'}</span>
+                            <span className="text-muted text-center fs-8 flex-grow-1 mx-2">→</span>
+                            <span className="text-dark">{b.flight_details?.arrival_city || 'N/A'}</span>
+                          </div>
+                          <div className="d-flex justify-content-between text-secondary fs-8">
+                            <span>{b.flight_details?.departure_airport || ''}</span>
+                            <span>{b.flight_details?.arrival_airport || ''}</span>
+                          </div>
+                        </div>
+
+                        <div className="d-flex align-items-center gap-2 mb-2 fs-7">
                           <img 
                             src={getAirlineLogo(b.flight_details?.airline_name, b.flight_details?.logo_url)} 
                             onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
-                            width={22} 
-                            height={22} 
+                            width={18} 
+                            height={18} 
                             className="object-fit-contain" 
                             alt="" 
                           />
-                          <span>{b.flight_details?.airline_name || 'Airline'}</span>
+                          <span className="fw-semibold text-dark">{b.flight_details?.airline_name || 'Airline'}</span>
+                          <span className="text-secondary">| {b.flight_details?.flight_number || ''}</span>
                         </div>
-                        <small className="text-secondary">{b.flight_details?.flight_number || ''} | {b.flight_details?.departure_time ? formatTime(b.flight_details.departure_time) : ''}</small>
-                      </td>
-                      <td className="py-3">
-                        <div className="fw-bold">{b.passenger_name}</div>
-                        <small className="text-secondary">Seat {b.seat_number} ({b.ticket_class})</small>
-                      </td>
-                      <td className="py-3">{formatDate(b.booking_date)}</td>
-                      <td className="py-3 text-center">
-                        <Badge 
-                          bg={b.status === 'Confirmed' ? 'success' : 'danger'} 
-                          className="px-2.5 py-1.5 rounded-pill fw-semibold"
-                        >
-                          {b.status}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-end">
-                        <div className="d-flex justify-content-end gap-2">
+
+                        <div className="border-top pt-2 mt-2 fs-7">
+                          <div className="d-flex justify-content-between mb-1">
+                            <span className="text-secondary">Passenger:</span>
+                            <strong className="text-dark">{b.passenger_name}</strong>
+                          </div>
+                          <div className="d-flex justify-content-between mb-1">
+                            <span className="text-secondary">Seat & Class:</span>
+                            <strong className="text-success">Seat {b.seat_number} ({b.ticket_class})</strong>
+                          </div>
+                          <div className="d-flex justify-content-between">
+                            <span className="text-secondary">Booked On:</span>
+                            <span className="text-dark">{formatDate(b.booking_date)}</span>
+                          </div>
+                        </div>
+
+                        <div className="d-flex gap-2 mt-3 pt-2.5 border-top w-100">
                           <Button 
                             variant="outline-primary" 
                             size="sm" 
-                            className="rounded-2 px-2.5 py-1.5 font-weight-600"
+                            className="flex-fill rounded-3 py-2 font-weight-600 fs-7 d-flex align-items-center justify-content-center"
                             onClick={() => onViewTicket(b)}
                           >
                             Boarding Pass
@@ -198,7 +284,7 @@ const HistoryView = ({ onViewTicket }) => {
                             <Button 
                               variant="outline-danger" 
                               size="sm" 
-                              className="rounded-2 px-2.5 py-1.5 font-weight-600"
+                              className="flex-fill rounded-3 py-2 font-weight-600 fs-7 d-flex align-items-center justify-content-center"
                               disabled={cancelLoadingId === b.id}
                               onClick={() => requestCancelBooking(b)}
                             >
@@ -206,12 +292,12 @@ const HistoryView = ({ onViewTicket }) => {
                             </Button>
                           )}
                         </div>
-                      </td>
-                    </tr>
+                      </Card.Body>
+                    </Card>
                   ))}
-                </tbody>
-              </Table>
-            </div>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="text-center py-5 text-muted">
               <span className="material-icons font-size-36 text-secondary mb-2">history</span>

@@ -145,7 +145,7 @@ const FlightSearchCard = ({ onSearch }) => {
               <Form onSubmit={handleSubmit} className="position-relative">
                 <div className="row g-3 align-items-end">
                   {/* From Field */}
-                  <div className="col-md-5 position-relative">
+                  <div className="col-12 col-md-5 position-relative">
                     <Form.Group controlId="searchFrom">
                       <Form.Label className="fw-semibold text-secondary">From</Form.Label>
                       <Form.Control 
@@ -179,7 +179,7 @@ const FlightSearchCard = ({ onSearch }) => {
                   </div>
 
                   {/* Swap Button */}
-                  <div className="col-md-2 text-center d-flex justify-content-center">
+                  <div className="col-12 col-md-2 text-center d-flex justify-content-center align-items-center swap-button-container">
                     <Button 
                       type="button" 
                       variant="light" 
@@ -188,12 +188,13 @@ const FlightSearchCard = ({ onSearch }) => {
                       className="rounded-circle border shadow-sm p-2 d-flex align-items-center justify-content-center hover-lift"
                       style={{ width: '42px', height: '42px' }}
                     >
-                      <span className="material-icons text-primary font-size-20">swap_horiz</span>
+                      <span className="material-icons text-primary font-size-20 d-none d-md-inline">swap_horiz</span>
+                      <span className="material-icons text-primary font-size-20 d-inline d-md-none">swap_vert</span>
                     </Button>
                   </div>
 
                   {/* To Field */}
-                  <div className="col-md-5 position-relative">
+                  <div className="col-12 col-md-5 position-relative">
                     <Form.Group controlId="searchTo">
                       <Form.Label className="fw-semibold text-secondary">To</Form.Label>
                       <Form.Control 
@@ -227,7 +228,7 @@ const FlightSearchCard = ({ onSearch }) => {
                   </div>
 
                   {/* Date Field */}
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <Form.Group controlId="searchDate">
                       <Form.Label className="fw-semibold text-secondary">Departure Date</Form.Label>
                       <Form.Control 
@@ -243,7 +244,7 @@ const FlightSearchCard = ({ onSearch }) => {
                   </div>
 
                   {/* Passengers Count */}
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <Form.Group controlId="searchPassengers">
                       <Form.Label className="fw-semibold text-secondary">Passengers</Form.Label>
                       <Form.Select 
@@ -260,7 +261,7 @@ const FlightSearchCard = ({ onSearch }) => {
                   </div>
 
                   {/* Travel Class */}
-                  <div className="col-md-4">
+                  <div className="col-12 col-md-4">
                     <Form.Group controlId="searchClass">
                       <Form.Label className="fw-semibold text-secondary">Class</Form.Label>
                       <Form.Select 

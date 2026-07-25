@@ -83,7 +83,7 @@ const TicketView = ({ booking, onSearchRef }) => {
         <Card className="card-design border-0 shadow-sm p-3 rounded-4">
           <Card.Body>
             <h5 className="fw-bold mb-3">Retrieve Boarding Pass</h5>
-            <Form onSubmit={handleSearch} className="d-flex gap-3 align-items-end">
+            <Form onSubmit={handleSearch} className="d-flex flex-column flex-sm-row gap-3 align-items-sm-end">
               <Form.Group className="flex-fill" controlId="pnrInput">
                 <Form.Label className="fw-semibold text-secondary">Enter Booking Reference (PNR)</Form.Label>
                 <Form.Control 
@@ -98,7 +98,7 @@ const TicketView = ({ booking, onSearchRef }) => {
                 variant="primary" 
                 type="submit" 
                 disabled={loading}
-                className="btn-color px-4 py-2.5 rounded-3 fw-bold shadow-sm d-flex align-items-center gap-2"
+                className="btn-color px-4 py-2.5 rounded-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2 w-100 w-sm-auto"
                 style={{ height: '48px' }}
               >
                 {loading ? <Spinner animation="border" size="sm" /> : "Retrieve"}
@@ -206,7 +206,7 @@ const TicketView = ({ booking, onSearchRef }) => {
                 </div>
 
                 {/* Right Side: Stub & Barcode */}
-                <div className="col-lg-4 text-center ps-lg-4">
+                <div className="col-lg-4 text-center ps-lg-4 border-top-dashed-md">
                   <div className="d-flex flex-column align-items-center justify-content-center">
                     <div className="mb-2 text-secondary fw-semibold font-size-12">SCAN FOR GATE PASS</div>
                     

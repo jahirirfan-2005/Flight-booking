@@ -72,6 +72,22 @@ body {
   z-index: 100;
   border-right: 1px solid #f1f5f9;
   flex-shrink: 0;
+  transition: transform var(--transition-speed) ease-in-out;
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 1050;
+    transform: translateX(-100%);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15) !important;
+  }
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
 }
 
 .sidebar-container {
@@ -511,5 +527,67 @@ body {
     box-shadow: none !important;
     page-break-inside: avoid;
     margin: 0 auto;
+  }
+}
+
+/* Mobile Layout Helpers */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+}
+
+.mobile-header-bar {
+  background-color: var(--card-bg);
+  border-bottom: 1px solid #f1f5f9;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.sidebar-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary-color);
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-speed) ease;
+}
+
+.sidebar-close-btn:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+/* Responsive Ticket tear-off coupon line */
+.border-top-dashed-md {
+  border-top: none;
+}
+
+@media (max-width: 991.98px) {
+  .border-top-dashed-md {
+    border-top: 2px dashed #e2e8f0 !important;
+    padding-top: 24px !important;
+    margin-top: 16px !important;
+  }
+}
+
+/* Responsive Grid/Flex spacing rules */
+@media (max-width: 767.98px) {
+  .swap-button-container {
+    margin: -10px 0;
+    z-index: 10;
   }
 }

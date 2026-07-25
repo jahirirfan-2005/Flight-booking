@@ -1,4 +1,4 @@
-const Sidebar = ({ currentPage, onPageChange }) => {
+const Sidebar = ({ currentPage, onPageChange, isOpen, onClose }) => {
   const menuItems = [
     { id: 'Home', label: 'Home', icon: 'home' },
     { id: 'Ticket', label: 'Ticket', icon: 'confirmation_number' },
@@ -15,8 +15,17 @@ const Sidebar = ({ currentPage, onPageChange }) => {
   };
 
   return (
-    <div className="sidebar shadow-sm">
-      <div className="sidebar-container d-flex flex-column justify-content-between h-100 py-3">
+    <div className={`sidebar shadow-sm ${isOpen ? 'sidebar-open' : ''}`}>
+      <div className="sidebar-container d-flex flex-column justify-content-between h-100 py-3 position-relative">
+        {/* Mobile Close Button */}
+        <button 
+          className="sidebar-close-btn d-md-none" 
+          onClick={onClose} 
+          aria-label="Close sidebar"
+        >
+          <span className="material-icons">close</span>
+        </button>
+
         <div className="w-100">
           <div className="sidebar-brand px-3 py-4 text-center">
             <div className="d-flex align-items-center justify-content-center gap-2">

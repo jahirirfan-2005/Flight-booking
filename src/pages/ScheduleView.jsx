@@ -117,78 +117,157 @@ const ScheduleView = ({ onSelectFlight }) => {
               <p className="text-muted">Loading schedule databank...</p>
             </div>
           ) : filteredFlights.length > 0 ? (
-            <div className="table-responsive">
-              <Table hover className="align-middle mb-0 text-nowrap table-custom">
-                <thead className="table-light">
-                  <tr>
-                    <th className="px-4 py-3 text-secondary-emphasis">Airline</th>
-                    <th className="py-3 text-secondary-emphasis">Route</th>
-                    <th className="py-3 text-secondary-emphasis">Departure</th>
-                    <th className="py-3 text-secondary-emphasis">Arrival</th>
-                    <th className="py-3 text-secondary-emphasis">Duration & Stops</th>
-                    <th className="py-3 text-secondary-emphasis">Base Fare</th>
-                    <th className="py-3 text-secondary-emphasis text-center">Availability</th>
-                    <th className="px-4 py-3 text-end text-secondary-emphasis">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
+            <>
+              {/* Desktop Table View */}
+              <div className="table-responsive d-none d-md-block">
+                <Table hover className="align-middle mb-0 text-nowrap table-custom">
+                  <thead className="table-light">
+                    <tr>
+                      <th className="px-4 py-3 text-secondary-emphasis">Airline</th>
+                      <th className="py-3 text-secondary-emphasis">Route</th>
+                      <th className="py-3 text-secondary-emphasis">Departure</th>
+                      <th className="py-3 text-secondary-emphasis">Arrival</th>
+                      <th className="py-3 text-secondary-emphasis">Duration & Stops</th>
+                      <th className="py-3 text-secondary-emphasis">Base Fare</th>
+                      <th className="py-3 text-secondary-emphasis text-center">Availability</th>
+                      <th className="px-4 py-3 text-end text-secondary-emphasis">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredFlights.map((f) => (
+                      <tr key={f.id}>
+                        <td className="px-4 py-3">
+                          <div className="d-flex align-items-center gap-2.5">
+                            <img 
+                              src={getAirlineLogo(f.airline_name, f.logo_url)} 
+                              onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
+                              width={30} 
+                              height={30} 
+                              className="bg-light p-1 rounded border object-fit-contain" 
+                              alt="" 
+                            />
+                            <div>
+                              <strong className="d-block text-dark">{f.airline_name}</strong>
+                              <small className="text-secondary">{f.flight_number}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3">
+                          <div className="fw-bold">{f.departure_city} → {f.arrival_city}</div>
+                          <small className="text-secondary">{f.departure_airport} to {f.arrival_airport}</small>
+                        </td>
+                        <td className="py-3">
+                          <strong>{formatTime(f.departure_time)}</strong>
+                          <small className="text-secondary d-block">{formatDate(f.departure_time)}</small>
+                        </td>
+                        <td className="py-3">
+                          <strong>{formatTime(f.arrival_time)}</strong>
+                          <small className="text-secondary d-block">{formatDate(f.arrival_time)}</small>
+                        </td>
+                        <td className="py-3">
+                          <div className="fw-semibold">{getDuration(f.arrival_time, f.departure_time)}</div>
+                          <small className="text-success fw-bold">{f.stops}</small>
+                        </td>
+                        <td className="py-3">
+                          <strong className="text-dark">₹{parseInt(f.price).toLocaleString('en-IN')}</strong>
+                        </td>
+                        <td className="py-3 text-center">
+                          <span className={`badge ${f.available_seats > 20 ? 'bg-success-subtle text-success-emphasis' : 'bg-warning-subtle text-warning-emphasis'} px-2.5 py-1.5 rounded fw-semibold`}>
+                            {f.available_seats} seats left
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-end">
+                          <Button 
+                            variant="primary" 
+                            size="sm" 
+                            className="rounded-2 btn-color font-weight-600 px-3"
+                            onClick={() => onSelectFlight(f)}
+                          >
+                            Book Direct
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards List View */}
+              <div className="d-block d-md-none p-3">
+                <div className="d-flex flex-column gap-3">
                   {filteredFlights.map((f) => (
-                    <tr key={f.id}>
-                      <td className="px-4 py-3">
-                        <div className="d-flex align-items-center gap-2.5">
-                          <img 
-                            src={getAirlineLogo(f.airline_name, f.logo_url)} 
-                            onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
-                            width={30} 
-                            height={30} 
-                            className="bg-light p-1 rounded border object-fit-contain" 
-                            alt="" 
-                          />
-                          <div>
-                            <strong className="d-block text-dark">{f.airline_name}</strong>
-                            <small className="text-secondary">{f.flight_number}</small>
+                    <Card key={f.id} className="border shadow-sm rounded-4 overflow-hidden bg-white">
+                      <Card.Body className="p-3">
+                        <div className="d-flex justify-content-between align-items-center mb-2.5">
+                          <div className="d-flex align-items-center gap-2">
+                            <img 
+                              src={getAirlineLogo(f.airline_name, f.logo_url)} 
+                              onError={(e) => { e.target.onerror = null; e.target.src = DEFAULT_AIRLINE_LOGO; }}
+                              width={24} 
+                              height={24} 
+                              className="bg-light p-1 rounded border object-fit-contain" 
+                              alt="" 
+                            />
+                            <div>
+                              <strong className="d-block text-dark fs-7">{f.airline_name}</strong>
+                              <small className="text-secondary fs-8">{f.flight_number}</small>
+                            </div>
+                          </div>
+                          <span className={`badge ${f.available_seats > 20 ? 'bg-success-subtle text-success-emphasis' : 'bg-warning-subtle text-warning-emphasis'} px-2 py-1 rounded fs-8 fw-semibold`}>
+                            {f.available_seats} left
+                          </span>
+                        </div>
+                        
+                        <div className="bg-light p-2.5 rounded-3 mb-3 fs-7">
+                          <div className="d-flex align-items-center justify-content-between font-weight-600 mb-1">
+                            <span className="text-dark">{f.departure_city}</span>
+                            <span className="text-muted text-center fs-8 flex-grow-1 mx-2">→</span>
+                            <span className="text-dark">{f.arrival_city}</span>
+                          </div>
+                          <div className="d-flex justify-content-between text-secondary fs-8">
+                            <span>{f.departure_airport}</span>
+                            <span>{f.arrival_airport}</span>
                           </div>
                         </div>
-                      </td>
-                      <td className="py-3">
-                        <div className="fw-bold">{f.departure_city} → {f.arrival_city}</div>
-                        <small className="text-secondary">{f.departure_airport} to {f.arrival_airport}</small>
-                      </td>
-                      <td className="py-3">
-                        <strong>{formatTime(f.departure_time)}</strong>
-                        <small className="text-secondary d-block">{formatDate(f.departure_time)}</small>
-                      </td>
-                      <td className="py-3">
-                        <strong>{formatTime(f.arrival_time)}</strong>
-                        <small className="text-secondary d-block">{formatDate(f.arrival_time)}</small>
-                      </td>
-                      <td className="py-3">
-                        <div className="fw-semibold">{getDuration(f.arrival_time, f.departure_time)}</div>
-                        <small className="text-success fw-bold">{f.stops}</small>
-                      </td>
-                      <td className="py-3">
-                        <strong className="text-dark">₹{parseInt(f.price).toLocaleString('en-IN')}</strong>
-                      </td>
-                      <td className="py-3 text-center">
-                        <span className={`badge ${f.available_seats > 20 ? 'bg-success-subtle text-success-emphasis' : 'bg-warning-subtle text-warning-emphasis'} px-2.5 py-1.5 rounded fw-semibold`}>
-                          {f.available_seats} seats left
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-end">
-                        <Button 
-                          variant="primary" 
-                          size="sm" 
-                          className="rounded-2 btn-color font-weight-600 px-3"
-                          onClick={() => onSelectFlight(f)}
-                        >
-                          Book Direct
-                        </Button>
-                      </td>
-                    </tr>
+
+                        <div className="row g-2 border-top pt-2.5 mt-2 fs-7 text-center">
+                          <div className="col-4 border-end">
+                            <small className="text-secondary d-block">Departure</small>
+                            <strong className="text-dark fs-7">{formatTime(f.departure_time)}</strong>
+                            <small className="text-secondary d-block fs-8">{formatDate(f.departure_time)}</small>
+                          </div>
+                          <div className="col-4 border-end">
+                            <small className="text-secondary d-block">Arrival</small>
+                            <strong className="text-dark fs-7">{formatTime(f.arrival_time)}</strong>
+                            <small className="text-secondary d-block fs-8">{formatDate(f.arrival_time)}</small>
+                          </div>
+                          <div className="col-4">
+                            <small className="text-secondary d-block">Duration</small>
+                            <strong className="text-dark fs-7">{getDuration(f.arrival_time, f.departure_time)}</strong>
+                            <small className="text-success fw-bold d-block fs-8">{f.stops}</small>
+                          </div>
+                        </div>
+
+                        <div className="d-flex align-items-center justify-content-between border-top pt-3 mt-3 w-100">
+                          <div>
+                            <small className="text-muted d-block font-size-11">Base Fare</small>
+                            <strong className="text-dark fs-5">₹{parseInt(f.price).toLocaleString('en-IN')}</strong>
+                          </div>
+                          <Button 
+                            variant="primary" 
+                            size="sm" 
+                            className="rounded-3 btn-color font-weight-600 px-4 py-2 fs-7"
+                            onClick={() => onSelectFlight(f)}
+                          >
+                            Book Direct
+                          </Button>
+                        </div>
+                      </Card.Body>
+                    </Card>
                   ))}
-                </tbody>
-              </Table>
-            </div>
+                </div>
+              </div>
+            </>
           ) : (
             <div className="text-center py-5 text-muted">
               <span className="material-icons font-size-36 text-secondary mb-2">flight_takeoff</span>
